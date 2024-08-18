@@ -2,10 +2,14 @@ package tobyspring.hellospring2024;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class CachedExRateProvider implements ExRateProvider {
 	
 	private final ExRateProvider target;
+	
+	private BigDecimal cachedExRate;
+	private LocalDateTime cacheExpiryTime;
 
 	public CachedExRateProvider(ExRateProvider target) {
 		this.target = target;
@@ -13,6 +17,12 @@ public class CachedExRateProvider implements ExRateProvider {
 
 	@Override
 	public BigDecimal getExRate(String currency) throws IOException {
-		return target.getExRate(currency);
+		if (cachedExRate == null || cacheExpiryTime.isBefore(LocalDateTime.now())) {
+			cachedExRate = target.getExRate(currency);
+			cacheExpiryTime = LocalDateTime.now().plusSeconds(3);
+
+			System.out.println("CachedExRateProvider: cache miss");
+		}
+		return cachedExRate;
 	}
 }
