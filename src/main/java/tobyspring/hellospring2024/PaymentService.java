@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 
 public class PaymentService {
 
-	private final WebApiExRateProvider exRateProvider;
+	private final SimpleExRateProvider exRateProvider;
 
 	public PaymentService() {
-		exRateProvider = new WebApiExRateProvider();
+		exRateProvider = new SimpleExRateProvider();
 	}
 
 	public Payment prepare(
@@ -17,7 +17,7 @@ public class PaymentService {
 			String currency,
 			BigDecimal foreignCurrentAmount
 	) throws IOException {
-		BigDecimal exRate = exRateProvider.getWebExRate(currency);
+		BigDecimal exRate = exRateProvider.getExRate(currency);
 
 		BigDecimal convertedAmount = foreignCurrentAmount.multiply(exRate);
 		LocalDateTime validUntil = LocalDateTime.now().plusMinutes(30);
