@@ -6,10 +6,10 @@ import java.time.LocalDateTime;
 
 public class PaymentService {
 
-	private final SimpleExRateProvider exRateProvider;
+	private final ExRateProvider exRateProvider;
 
 	public PaymentService() {
-		exRateProvider = new SimpleExRateProvider();
+		exRateProvider = new WebApiExRateProvider();
 	}
 
 	public Payment prepare(
