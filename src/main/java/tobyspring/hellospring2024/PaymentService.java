@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class PaymentService {
 
-	private WebApiExRateProvider exRateProvider;
+	private final WebApiExRateProvider exRateProvider;
 
 	public PaymentService() {
 		exRateProvider = new WebApiExRateProvider();
