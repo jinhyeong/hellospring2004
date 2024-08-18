@@ -19,7 +19,17 @@ public class PaymentService {
 			String currency,
 			BigDecimal foreignCurrentAmount
 	) throws IOException {
-		// 환율 가져오기
+		BigDecimal exRate = getExRate(currency);
+
+		BigDecimal convertedAmount = foreignCurrentAmount.multiply(exRate);
+		LocalDateTime validUntil = LocalDateTime.now().plusMinutes(30);
+		
+		return new Payment(
+				orderId, currency, foreignCurrentAmount, exRate, convertedAmount, validUntil
+		);
+	}
+
+	private BigDecimal getExRate(String currency) throws IOException {
 		URL url = new URL("https://open.er-api.com/v6/latest/" + currency);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -29,13 +39,7 @@ public class PaymentService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		ExRateData data = objectMapper.readValue(response, ExRateData.class);
 		BigDecimal exRate = data.rates().get("KRW");
-
-		BigDecimal convertedAmount = foreignCurrentAmount.multiply(exRate);
-		LocalDateTime validUntil = LocalDateTime.now().plusMinutes(30);
-		
-		return new Payment(
-				orderId, currency, foreignCurrentAmount, exRate, convertedAmount, validUntil
-		);
+		return exRate;
 	}
 
 	public static void main(String[] args) throws IOException {
